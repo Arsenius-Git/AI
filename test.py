@@ -9,10 +9,6 @@ from pygments.styles.dracula import background
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from apscheduler.schedulers.background import BackgroundScheduler
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
-warnings.filterwarnings("ignore")
-
 model_name = "blanchefort/rubert-base-cased-sentiment"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name)
@@ -24,7 +20,7 @@ headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 app = FastAPI()
 
 def scrape_review():
-    base_url = "https://otzyvmarketing.ru/"
+    base_url = "https://otzyvmarketing.ru/"#сайт для теста
     response = requests.get(base_url, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -59,13 +55,7 @@ def review_delay(texts):
 @app.get("/analyze")
 def analyze_sentiment(background_tasks: BackgroundTasks):
     texts = scrape_review()
-    #results = []
-    #sent_reviews = set()
     if not texts:
         return {"error":"No reviews found"}
-
     background_tasks.add_task(review_delay, texts)
-    #return results
-        #"message":"Started sending reviews",
-        #"to_send": len(texts),
 
