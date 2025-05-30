@@ -1,13 +1,10 @@
 import os
-import warnings
 import time
 import requests
 from bs4 import BeautifulSoup
 from fastapi import FastAPI, Request, BackgroundTasks
 from pydantic import BaseModel
-from pygments.styles.dracula import background
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
-from apscheduler.schedulers.background import BackgroundScheduler
 
 model_name = "blanchefort/rubert-base-cased-sentiment"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
