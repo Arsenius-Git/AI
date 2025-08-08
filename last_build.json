@@ -1,0 +1,342 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "path": "ce79e52a-214f-4db3-b513-dd3e6eac1e88",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        20
+      ],
+      "id": "2a30cf7d-5d26-4c41-ad8f-0afe6f217f1b",
+      "name": "Webhook",
+      "webhookId": "ce79e52a-214f-4db3-b513-dd3e6eac1e88"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b307c691-5048-4d2d-b39c-bf5fecf1ec0e",
+              "leftValue": "={{ $json.query['hub.mode'] }}",
+              "rightValue": "subscribe",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "842535b0-fcf2-446d-9a23-9d952db58b54",
+              "leftValue": "={{ $json.query['hub.verify_token'] }}",
+              "rightValue": "arseniy0311",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "2993965d-4d66-4b17-b75e-7fd60432ab6b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        440,
+        -100
+      ],
+      "id": "5a384a42-f942-4559-ba48-1dea50829f7d",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://199c82d961c4.ngrok-free.app/api/messages/",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.body.entry[0].messaging[0].message.text }}"
+            },
+            {
+              "name": "sender",
+              "value": "={{ $json.body.entry[0].messaging[0].sender.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        140
+      ],
+      "id": "a116dac4-bb08-4a37-9a7f-1781d26f844d",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "845ccbeb-6ba3-49c0-b25c-25d0d5142987",
+              "leftValue": "={{ $json.classified_intent }}",
+              "rightValue": "make an appointment",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        180
+      ],
+      "id": "c458392e-2cd5-43f7-a64f-2f4a1d555f8e",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.calendly.com/scheduling_links",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJraWQiOiIxY2UxZTEzNjE3ZGNmNzY2YjNjZWJjY2Y4ZGM1YmFmYThhNjVlNjg0MDIzZjdjMzJiZTgzNDliMjM4MDEzNWI0IiwidHlwIjoiUEFUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJodHRwczovL2F1dGguY2FsZW5kbHkuY29tIiwiaWF0IjoxNzUzOTAzODI4LCJqdGkiOiJiMzNiNGRmNy00YTk1LTQzNDctYjY1ZS1lYWU5MDZlZWIzZTQiLCJ1c2VyX3V1aWQiOiJiMTc2YzE5Yy0xODQ0LTRhMzktYjM2MC0zNzQyYmMxYTllOGMifQ.4qeDlQnmAhocP6RIgzC8neL4H8U-CGfVeTLKRqrZXxnn9zmZ-5KbmmgZxDEFV8FvPalHYuBGtmJi0YPfja1aTQ"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "max_event_count",
+              "value": "1"
+            },
+            {
+              "name": "owner",
+              "value": "={{ $json.collection[0].uri }}"
+            },
+            {
+              "name": "owner_type",
+              "value": "EventType"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        180
+      ],
+      "id": "44f2e060-28d3-48c3-bbd6-e9aed728a249",
+      "name": "scheduling_links"
+    },
+    {
+      "parameters": {
+        "url": "https://api.calendly.com/users/me",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer eyJraWQiOiIxY2UxZTEzNjE3ZGNmNzY2YjNjZWJjY2Y4ZGM1YmFmYThhNjVlNjg0MDIzZjdjMzJiZTgzNDliMjM4MDEzNWI0IiwidHlwIjoiUEFUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJodHRwczovL2F1dGguY2FsZW5kbHkuY29tIiwiaWF0IjoxNzUzOTAzODI4LCJqdGkiOiJiMzNiNGRmNy00YTk1LTQzNDctYjY1ZS1lYWU5MDZlZWIzZTQiLCJ1c2VyX3V1aWQiOiJiMTc2YzE5Yy0xODQ0LTRhMzktYjM2MC0zNzQyYmMxYTllOGMifQ.4qeDlQnmAhocP6RIgzC8neL4H8U-CGfVeTLKRqrZXxnn9zmZ-5KbmmgZxDEFV8FvPalHYuBGtmJi0YPfja1aTQ\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        180
+      ],
+      "id": "748abb0d-d46d-498b-b9e9-08789adaef6a",
+      "name": "get_organization_for_next_node"
+    },
+    {
+      "parameters": {
+        "url": "https://api.calendly.com/event_types",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "active",
+              "value": "true"
+            },
+            {
+              "name": "organization",
+              "value": "={{ $json.resource.current_organization }}"
+            },
+            {
+              "name": "admin_managed",
+              "value": "false"
+            },
+            {
+              "name": "count",
+              "value": "1"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJraWQiOiIxY2UxZTEzNjE3ZGNmNzY2YjNjZWJjY2Y4ZGM1YmFmYThhNjVlNjg0MDIzZjdjMzJiZTgzNDliMjM4MDEzNWI0IiwidHlwIjoiUEFUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJodHRwczovL2F1dGguY2FsZW5kbHkuY29tIiwiaWF0IjoxNzUzOTAzODI4LCJqdGkiOiJiMzNiNGRmNy00YTk1LTQzNDctYjY1ZS1lYWU5MDZlZWIzZTQiLCJ1c2VyX3V1aWQiOiJiMTc2YzE5Yy0xODQ0LTRhMzktYjM2MC0zNzQyYmMxYTllOGMifQ.4qeDlQnmAhocP6RIgzC8neL4H8U-CGfVeTLKRqrZXxnn9zmZ-5KbmmgZxDEFV8FvPalHYuBGtmJi0YPfja1aTQ"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        840,
+        180
+      ],
+      "id": "fafea321-2cff-416a-9fad-b1124b9ee8e1",
+      "name": "get_event_types"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_organization_for_next_node": {
+      "main": [
+        [
+          {
+            "node": "get_event_types",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "scheduling_links": {
+      "main": [
+        []
+      ]
+    },
+    "get_event_types": {
+      "main": [
+        [
+          {
+            "node": "scheduling_links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "get_organization_for_next_node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4566556d-92b2-44ac-b1fd-bc441c4ba75b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7c146b994ec2fdf78c493ac5454942d390970a2f69a7539e22aab6c2b5437fc1"
+  },
+  "id": "wEKy6sK2C5JDhRyj",
+  "tags": []
+}
